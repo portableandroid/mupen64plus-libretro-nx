@@ -59,6 +59,11 @@
 
 #include "audio_plugin.h"
 
+#ifdef PORTANDROID
+#include "emu_init.h"
+extern void swap_rom(unsigned char* rom, int length);
+#endif
+
 #ifndef PRESCALE_WIDTH
 #define PRESCALE_WIDTH  640
 #endif
@@ -420,7 +425,17 @@ static bool emu_step_load_data()
             log_cb(RETRO_LOG_ERROR, CORE_NAME ": failed to query ROM header information\n");
         goto load_fail;
     }
+#ifdef PORTANDROID
+    // set game ID
+    char str_buf[1024];
 
+    m64p_rom_header *hdr = (m64p_rom_header *) malloc(sizeof(m64p_rom_header));
+    memcpy(hdr, &ROM_HEADER, sizeof(m64p_rom_header));
+    swap_rom((unsigned char *) hdr, sizeof(m64p_rom_header));
+    sprintf(str_buf, "%x %x", big32((unsigned int) hdr->CRC1), big32((unsigned int) hdr->CRC2));
+    cb_itf.cb_rom_info_set(NULL, str_buf, 0);
+    free(hdr);
+#endif
     return true;
 
 load_fail:
