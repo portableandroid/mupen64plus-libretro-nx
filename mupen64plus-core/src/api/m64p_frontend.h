@@ -123,6 +123,19 @@ typedef m64p_error (*ptr_CoreCheatEnabled)(const char *, int);
 EXPORT m64p_error CALL CoreCheatEnabled(const char *, int);
 #endif
 
+#ifdef PORTANDROID
+
+/* CoreCheatsRevert()
+ *
+ * This function will revert all existing cheats
+ */
+typedef m64p_error (*ptr_CoreCheatsRevert)(void);
+#if defined(M64P_CORE_PROTOTYPES)
+EXPORT m64p_error CALL CoreCheatsRevert(void);
+#endif
+
+#endif
+
 /* CoreGetRomSettings()
  *
  * This function will retrieve the ROM settings from the mupen64plus INI file for

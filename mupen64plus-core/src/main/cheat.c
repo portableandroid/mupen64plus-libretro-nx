@@ -500,3 +500,27 @@ out:
     free(cheat_raw);
     return 0;
 }
+
+#ifdef PORTANDROID
+void cheat_revert(struct cheat_ctx* ctx)
+{
+    cheat_t *cheat;
+
+    if (list_empty(&ctx->active_cheats))
+        return;
+
+
+    //Revert cheats
+
+    list_for_each_entry_t(cheat, &ctx->active_cheats, cheat_t, list) {
+        cheat->enabled = 0;
+    }
+
+    //Apply cheats
+    //cheat_apply_cheats(ENTRY_VI);
+
+    //Delete all cheats
+    //cheat_delete_all();
+
+}
+#endif

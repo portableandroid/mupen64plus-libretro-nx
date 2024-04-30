@@ -329,6 +329,20 @@ EXPORT m64p_error CALL CoreCheatEnabled(const char *CheatName, int Enabled)
     return M64ERR_INPUT_INVALID;
 }
 
+#ifdef PORTANDROID
+
+EXPORT m64p_error CALL CoreCheatsRevert(void)
+{
+    if (!l_CoreInit)
+        return M64ERR_NOT_INIT;
+
+    cheat_revert(&g_cheat_ctx);
+    return M64ERR_SUCCESS;
+
+}
+
+#endif
+
 EXPORT m64p_error CALL CoreGetRomSettings(m64p_rom_settings *RomSettings, int RomSettingsLength, int Crc1, int Crc2)
 {
     romdatabase_entry* entry;

@@ -48,5 +48,7 @@ int cheat_add_new(struct cheat_ctx* ctx, const char* name, m64p_cheat_code* code
 int cheat_set_enabled(struct cheat_ctx* ctx, const char* name, int enabled);
 void cheat_delete_all(struct cheat_ctx* ctx);
 int cheat_add_hacks(struct cheat_ctx* ctx, const char* rom_cheats);
-
+#ifdef PORTANDROID
+void cheat_revert(struct cheat_ctx* ctx);
+#endif
 #endif
