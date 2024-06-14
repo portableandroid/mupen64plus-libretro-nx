@@ -336,6 +336,7 @@ SOURCES_CXX   += \
     $(VIDEODIR_GLIDEN64)/src/Graphics/OpenGLContext/GLSL/glsl_SpecialShadersFactory.cpp           \
     $(VIDEODIR_GLIDEN64)/src/Graphics/OpenGLContext/GLSL/glsl_Utils.cpp                           \
     $(VIDEODIR_GLIDEN64)/src/Graphics/OpenGLContext/GraphicBuffer/PrivateApi/GraphicBuffer.cpp    \
+    $(VIDEODIR_GLIDEN64)/src/Graphics/OpenGLContext/GraphicBuffer/PrivateApi/libhardware.cpp      \
     $(VIDEODIR_GLIDEN64)/src/mupenplus/MemoryStatus_mupenplus.cpp                                 \
     $(VIDEODIR_GLIDEN64)/src/uCodes/F3D.cpp                                                       \
     $(VIDEODIR_GLIDEN64)/src/uCodes/F3DAM.cpp                                                     \
