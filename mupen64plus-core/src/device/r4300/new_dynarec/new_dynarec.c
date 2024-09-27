@@ -8831,7 +8831,11 @@ int new_recompile_block(int addr)
   else {
     //DebugMessage(M64MSG_VERBOSE, "Compile at bogus memory address: %x ", (int)addr);
     DebugMessage(M64MSG_ERROR, "Compile at bogus memory address: %x", (int)addr);
+#ifdef PORTANDROID
+      raise(SIGSEGV);
+#else
     exit(1);
+#endif
   }
 
   /* Pass 1: disassemble */
