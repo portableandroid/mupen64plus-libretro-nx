@@ -140,6 +140,8 @@ static bool     first_context_reset  = false;
 static bool     initializing         = true;
 static bool     load_game_successful = false;
 
+static bool     context_setup_first_init = false;
+
 bool libretro_swap_buffer;
 
 uint32_t *blitter_buf = NULL;
@@ -178,6 +180,7 @@ uint32_t EnableInaccurateTextureCoordinates = 0;
 uint32_t enableNativeResTexrects = 0;
 uint32_t enableLegacyBlending = 0;
 uint32_t EnableCopyColorToRDRAM = 0;
+uint32_t EnableCopyColorFromRDRAM = 0;
 uint32_t EnableCopyDepthToRDRAM = 0;
 uint32_t AspectRatio = 0;
 uint32_t MaxTxCacheSize = 0;
@@ -663,7 +666,7 @@ void retro_set_environment(retro_environment_t cb)
 void retro_get_system_info(struct retro_system_info *info)
 {
     info->library_name = "Mupen64Plus-Next";
-    info->library_version = "2.6" FLAVOUR_VERSION GIT_VERSION;
+    info->library_version = "2.7" FLAVOUR_VERSION GIT_VERSION;
     info->valid_extensions = "n64|v64|z64|bin|u1";
     info->need_fullpath = false;
     info->block_extract = false;
@@ -1072,6 +1075,13 @@ static void update_variables(bool startup)
              EnableCopyColorToRDRAM = 1;
           else
              EnableCopyColorToRDRAM = 0;
+       }
+
+       var.key = CORE_NAME "-EnableCopyColorFromRDRAM";
+       var.value = NULL;
+       if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+       {
+          EnableCopyColorFromRDRAM = !strcmp(var.value, "False") ? 0 : 1;
        }
 
        var.key = CORE_NAME "-EnableCopyDepthToRDRAM";
@@ -1775,24 +1785,35 @@ static void format_saved_memory(void)
     format_sram(saved_memory.sram);
     format_eeprom(saved_memory.eeprom, EEPROM_MAX_SIZE);
     format_flashram(saved_memory.flashram);
-    format_mempak(saved_memory.mempack + 0 * MEMPAK_SIZE);
-    format_mempak(saved_memory.mempack + 1 * MEMPAK_SIZE);
-    format_mempak(saved_memory.mempack + 2 * MEMPAK_SIZE);
-    format_mempak(saved_memory.mempack + 3 * MEMPAK_SIZE);
+
+    for (int i = 0; i < GAME_CONTROLLERS_COUNT; ++i)
+    {
+      // Generate a random serial ID
+      uint32_t serial[6];
+      int k;
+      for (k = 0; k < 6; ++k)
+      {
+         serial[k] = xoshiro256pp_next(&l_mpk_idgen);
+      }
+
+    format_mempak(saved_memory.mempack + i * MEMPAK_SIZE,
+        serial,
+        DEFAULT_MEMPAK_DEVICEID,
+        DEFAULT_MEMPAK_BANKS,
+        DEFAULT_MEMPAK_VERSION);
+    }
 }
 
 void context_reset(void)
 {
-    static bool first_init = true;
-
     if(current_rdp_type == RDP_PLUGIN_GLIDEN64)
     {
        log_cb(RETRO_LOG_DEBUG, CORE_NAME ": context_reset()\n");
        glsm_ctl(GLSM_CTL_STATE_CONTEXT_RESET, NULL);
-       if (first_init)
+       if (!context_setup_first_init)
        {
           glsm_ctl(GLSM_CTL_STATE_SETUP, NULL);
-          first_init = false;
+          context_setup_first_init = true;
        }
     }
 
@@ -2008,6 +2029,7 @@ void retro_unload_game(void)
     cleanup_global_paths();
     
     emu_initialized = false;
+    context_setup_first_init = false;
 
     // Reset savestate job var
     retro_savestate_complete = false;
