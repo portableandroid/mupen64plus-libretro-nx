@@ -704,6 +704,7 @@ void copy_file(char * ininame, char * fileName)
 
 void retro_init(void)
 {
+#ifndef PORTANDROID // database located in assets already
     char* sys_pathname;
     wchar_t w_pathname[PATH_SIZE];
     environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &sys_pathname);
@@ -716,7 +717,7 @@ void retro_init(void)
     if (!osal_path_existsW(w_pathname) || !osal_is_directory(w_pathname))
         osal_mkdirp(w_pathname);
     copy_file(inifile, "mupen64plus.ini");
-
+#endif
     struct retro_log_callback log;
     unsigned colorMode = RETRO_PIXEL_FORMAT_XRGB8888;
 
