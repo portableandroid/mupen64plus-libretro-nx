@@ -128,7 +128,7 @@ int r_cbutton;
 int l_cbutton;
 int d_cbutton;
 int u_cbutton;
-bool alternate_mapping;
+bool alternate_mapping = false;
 
 static uint8_t* game_data = NULL;
 static uint32_t game_size = 0;
